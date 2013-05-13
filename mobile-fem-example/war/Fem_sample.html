@@ -1,0 +1,154 @@
+<!doctype html>
+<!-- The DOCTYPE declaration above will set the     -->
+<!-- browser's rendering engine into                -->
+<!-- "Standards Mode". Replacing this declaration   -->
+<!-- with a "Quirks Mode" doctype is not supported. -->
+
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+<!--                                           -->
+<!-- Any title is fine                         -->
+<!--                                           -->
+<title>FEM Sample</title>
+
+<!--                                           -->
+<!-- This script loads your compiled module.   -->
+<!-- If you add any GWT meta tags, they must   -->
+<!-- be added before this line.                -->
+<!--                                           -->
+<script type="text/javascript" language="javascript"
+	src="fem_sample/fem_sample.nocache.js"></script>
+<script type="text/javascript" src="json_helper.js"></script>
+<script type="text/javascript" src="dat.gui.min.js"></script>
+<script type="text/javascript" src="paper.js"></script>
+<script type="text/javascript" src="rendermodel.js"></script>
+
+</head>
+
+<body style="background-color: black;">
+
+	<div id="myGuiCanvas" style="position: absolute; top: 0px; left: 100%;"></div>
+
+	<noscript>
+		<div
+			style="width: 22em; position: absolute; left: 50%; margin-left: -11em; color: red; background-color: white; border: 1px solid red; padding: 4px; font-family: sans-serif">
+			Your web browser must have JavaScript enabled in order for this
+			application to display correctly.</div>
+	</noscript>
+
+	<script type="text/javascript">
+		var model;
+		var modelRenderer;
+		var initReady = false;
+
+		var gui = new dat.GUI({
+			autoPlace : false
+		});
+
+		function setModel(inputModel) {
+			elements = createObjects(inputModel);
+			paper.setup(document.getElementById('myCanvas'));
+
+			if (!initReady) {
+				modelRenderer = new ModelRenderer();
+				initDatGui();
+				initDeviceOrientationEvents();
+				updateDatGui();
+			}
+
+			modelRenderer.draw_elements(elements);
+			paper.view.draw();
+			initReady = true;
+		}
+
+		function initDeviceOrientationEvents() {
+			if (window.DeviceOrientationEvent) {
+				window.addEventListener('deviceorientation',
+						function(eventData) {
+								var div = document.getElementById('myText');
+								var orient = window.orientation;
+								if (!orient || orient === 0) { // normal portrait orientation
+									modelRenderer.beta = -eventData.beta;
+									modelRenderer.gamma = -eventData.gamma;
+									div.innerHTML  = 'normal portrait orientation';
+								} else if (orient === -90) { // landscape, rotated clockwise
+									modelRenderer.beta = -eventData.gamma;
+									modelRenderer.gamma = eventData.beta;
+									div.innerHTML  = 'landscape, rotated clockwise';
+								} else if (orient === 90) { // landscape, rotated counterclockwise
+									modelRenderer.beta = eventData.gamma;
+									modelRenderer.gamma = -eventData.beta;
+									div.innerHTML  = 'landscape, rotated counterclockwise';
+								} else if (orient === 180) { // portrait, upside down
+									modelRenderer.beta =  eventData.beta;
+									modelRenderer.gamma = eventData.gamma;
+									div.innerHTML  = 'portrait, upside down';
+								}
+								if (modelRenderer.rotate) {
+									temp = modelRenderer.gamma;
+									modelRenderer.gamma = modelRenderer.beta;
+									modelRenderer.beta = -temp;
+								}
+								window.updateForces();
+						}, false);
+			}
+		}
+
+		function getBeta() {
+			return '' + modelRenderer.beta;
+		}
+
+		function getGamma() {
+			return '' + modelRenderer.gamma;
+		}
+
+		function setBeta(value) {
+			modelRenderer.beta = value;
+			updateDatGui();
+		}
+
+		function setGamma(value) {
+			modelRenderer.gamma = value;
+			updateDatGui();
+		}
+
+		function initDatGui() {
+			var folder1 = gui.addFolder('Display Scale');
+			folder1.add(modelRenderer, 'factorDisplacement', 1, 2000, 1)
+					.name('displacement');
+			folder1.add(modelRenderer, 'factorForce', 0.01, 0.1, 0.01).name(
+					'force');
+			folder1.add(modelRenderer, 'display_scale').name('show scale');
+			folder1.add(modelRenderer, 'rotate').name('rotate');
+		//	folder1.open();
+			var folder2 = gui.addFolder('Orientation');
+			gui.add(modelRenderer, 'beta', -180.0, 180.0).name('x-axis (beta)');
+			gui.add(modelRenderer, 'gamma', -180.0, 180.0).name(
+					'y-axis (gamma)');
+			folder2.open();
+
+			var canvas = document.getElementById('myGuiCanvas');
+			gui.domElement.style.position = 'absolute';
+			gui.domElement.style.right = '10px';
+			gui.domElement.style.top = '0px';
+			canvas.appendChild(gui.domElement);
+		}
+
+		// Iterate over all DAT.GUI controllers
+		function updateDatGui() {
+			if (initReady) {
+				for ( var i in gui.__controllers) {
+					gui.__controllers[i].updateDisplay();
+				}
+			}
+		}
+	</script>
+
+	<canvas id="myCanvas" style="background-color: black; width: 100%; height: 620px;"></canvas>
+	
+	<div style="background-color: darkgrey; width: 100%; height: 100%;"><b id='myText'>dude</b></div>
+
+</body>
+</html>
