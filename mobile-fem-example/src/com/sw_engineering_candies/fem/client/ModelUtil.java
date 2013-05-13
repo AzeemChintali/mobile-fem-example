@@ -1,4 +1,4 @@
-package com.sprunck.fem.client;
+package com.sw_engineering_candies.fem.client;
 
 import java.util.HashMap;
 import java.util.LinkedList;

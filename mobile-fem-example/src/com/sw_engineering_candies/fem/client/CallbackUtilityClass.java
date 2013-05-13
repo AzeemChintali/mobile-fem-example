@@ -1,4 +1,4 @@
-package com.sprunck.fem.client;
+package com.sw_engineering_candies.fem.client;
 
 public class CallbackUtilityClass {
 
@@ -33,7 +33,7 @@ public class CallbackUtilityClass {
 	}
 
 	public static native void exportStaticMethod() /*-{
-													$wnd.updateForces = $entry(@com.sprunck.fem.client.CallbackUtilityClass::updateForces());
+													$wnd.updateForces = $entry(@com.sw_engineering_candies.fem.client.CallbackUtilityClass::updateForces());
 													}-*/;
 
 	public static native void setModelGlobal(String model, Double currentBeta, Double currentGamma)

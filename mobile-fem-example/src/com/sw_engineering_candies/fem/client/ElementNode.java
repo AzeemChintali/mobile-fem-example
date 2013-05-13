@@ -1,4 +1,4 @@
-package com.sprunck.fem.client;
+package com.sw_engineering_candies.fem.client;
 
 public class ElementNode {
 	public double x = 0.0f;

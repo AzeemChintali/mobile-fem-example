@@ -1,4 +1,4 @@
-package com.sprunck.fem.client;
+package com.sw_engineering_candies.fem.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.Timer;
