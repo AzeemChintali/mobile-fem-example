@@ -55,7 +55,12 @@ public class CallbackUtilityClass {
 	public void updateModel() {
 		updateForces();
 		String json = ModelUtil.getJSON(model, currentBeta, currentGamma);
+		
+		final double start = System.currentTimeMillis();
 		setModelGlobal(json, currentBeta, currentGamma);
+		
+		final double end = System.currentTimeMillis();
+		System.out.println("update model ready       [" + (end - start) + "ms]");
 	}
 
 	public static void updateForces() {
