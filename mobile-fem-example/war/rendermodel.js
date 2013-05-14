@@ -39,7 +39,7 @@
 function ModelRenderer() {
 
 	var offset_x = 200;
-	var offset_y = 200;
+	var offset_y = 150;
 
 	var offset_x_scala = 20;
 	var offset_y_scala = 160;
@@ -50,8 +50,8 @@ function ModelRenderer() {
 	var factorX = 3;
 	var factorY = 3;
 
-	this.factorForce = 0.1;
-	this.factorDisplacement = 1900;
+	this.factorForce = 0.06;
+	this.factorDisplacement = 1100;
 	
 	this.beta = 1.1;
 	this.gamma = 1.1;
@@ -59,6 +59,8 @@ function ModelRenderer() {
 	this.rotate = false;
 	
 	this.display_scale = true;
+	
+	this.orientation = 'unknown';
 
 	var minColor = 20;
 	var maxColor = -20;

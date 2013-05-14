@@ -59,24 +59,23 @@
 			if (window.DeviceOrientationEvent) {
 				window.addEventListener('deviceorientation',
 						function(eventData) {
-								var div = document.getElementById('myText');
 								var orient = window.orientation;
 								if (!orient || orient === 0) { // normal portrait orientation
 									modelRenderer.beta = -eventData.beta;
 									modelRenderer.gamma = -eventData.gamma;
-									div.innerHTML  = 'normal portrait orientation';
+									modelRenderer.orientation = 'normal portrait';
 								} else if (orient === -90) { // landscape, rotated clockwise
 									modelRenderer.beta = -eventData.gamma;
 									modelRenderer.gamma = eventData.beta;
-									div.innerHTML  = 'landscape, rotated clockwise';
+									modelRenderer.orientation = 'landscape, rotated clockwise';
 								} else if (orient === 90) { // landscape, rotated counterclockwise
 									modelRenderer.beta = eventData.gamma;
 									modelRenderer.gamma = -eventData.beta;
-									div.innerHTML  = 'landscape, rotated counterclockwise';
+									modelRenderer.orientation = 'landscape, rotated counterclockwise';
 								} else if (orient === 180) { // portrait, upside down
 									modelRenderer.beta =  eventData.beta;
 									modelRenderer.gamma = eventData.gamma;
-									div.innerHTML  = 'portrait, upside down';
+									modelRenderer.orientation  = 'portrait, upside down';
 								}
 								if (modelRenderer.rotate) {
 									temp = modelRenderer.gamma;
@@ -87,7 +86,7 @@
 						}, false);
 			}
 		}
-
+	
 		function getBeta() {
 			return '' + modelRenderer.beta;
 		}
@@ -114,16 +113,20 @@
 					'force');
 			folder1.add(modelRenderer, 'display_scale').name('show scale');
 			folder1.add(modelRenderer, 'rotate').name('rotate');
+			// folder1.open();
+
 			var folder2 = gui.addFolder('Orientation');
 			gui.add(modelRenderer, 'beta', -180.0, 180.0).name('x-axis (beta)');
 			gui.add(modelRenderer, 'gamma', -180.0, 180.0).name(
 					'y-axis (gamma)');
+			gui.add(modelRenderer, 'orientation', [ 'normal portrait', 'landscape, rotated clockwise', 'landscape, rotated counterclockwise', 'portrait, upside down' ] );
 			folder2.open();
 
 			var canvas = document.getElementById('myGuiCanvas');
 			gui.domElement.style.position = 'absolute';
 			gui.domElement.style.right = '10px';
 			gui.domElement.style.top = '0px';
+			gui.domElement.style.width = '400px';
 			canvas.appendChild(gui.domElement);
 		}
 
@@ -137,9 +140,7 @@
 		}
 	</script>
 
-	<canvas id="myCanvas" style="background-color: black; width: 100%; height: 620px;"></canvas>
-	
-	<div style="background-color: darkgrey; width: 100%; height: 100%;"><b id='myText'></b></div>
+	<canvas id="myCanvas" style="background-color: black; width: 100%; height: 100%;"></canvas>
 
 </body>
 </html>
