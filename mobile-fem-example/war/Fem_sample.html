@@ -59,31 +59,34 @@
 						.addEventListener(
 								'deviceorientation',
 								function(eventData) {
+									var beta;
+									var gamma;
+									var orient = window.orientation;
+									if (!orient || orient === 0) { // normal portrait orientation
+										beta = -eventData.beta;
+										gamma = -eventData.gamma;
+										modelRenderer.orientation = 'normal portrait';
+									} else if (orient === -90) { // landscape, rotated clockwise
+										beta = -eventData.gamma;
+										gamma = eventData.beta;
+										modelRenderer.orientation = 'landscape, rotated clockwise';
+									} else if (orient === 90) { // landscape, rotated counterclockwise
+										beta = eventData.gamma;
+										gamma = -eventData.beta;
+										modelRenderer.orientation = 'landscape, rotated counterclockwise';
+									} else if (orient === 180) { // portrait, upside down
+										beta = eventData.beta;
+										gamma = eventData.gamma;
+										modelRenderer.orientation = 'portrait, upside down';
+									}
+									if (modelRenderer.rotate) {
+										temp = gamma;
+										gamma = beta;
+										beta = -temp;
+									}
 									if (initReady) {
-										var orient = window.orientation;
-
-										if (!orient || orient === 0) { // normal portrait orientation
-											modelRenderer.beta = -eventData.beta;
-											modelRenderer.gamma = -eventData.gamma;
-											modelRenderer.orientation = 'normal portrait';
-										} else if (orient === -90) { // landscape, rotated clockwise
-											modelRenderer.beta = -eventData.gamma;
-											modelRenderer.gamma = eventData.beta;
-											modelRenderer.orientation = 'landscape, rotated clockwise';
-										} else if (orient === 90) { // landscape, rotated counterclockwise
-											modelRenderer.beta = eventData.gamma;
-											modelRenderer.gamma = -eventData.beta;
-											modelRenderer.orientation = 'landscape, rotated counterclockwise';
-										} else if (orient === 180) { // portrait, upside down
-											modelRenderer.beta = eventData.beta;
-											modelRenderer.gamma = eventData.gamma;
-											modelRenderer.orientation = 'portrait, upside down';
-										}
-										if (modelRenderer.rotate) {
-											temp = modelRenderer.gamma;
-											modelRenderer.gamma = modelRenderer.beta;
-											modelRenderer.beta = -temp;
-										}
+										modelRenderer.beta = beta;
+										modelRenderer.gamma = gamma;
 										window.updateForces();
 									}
 									initReady = true;
@@ -110,24 +113,27 @@
 		}
 
 		function initDatGui() {
-			var folder1 = gui.addFolder('Display Scale');
+			var folder1 = gui.addFolder('Display Options');
 			folder1.add(modelRenderer, 'factorDisplacement', 1, 2000, 1).name(
-					'displacement');
+					'Scaling Factor of Shift');
 			folder1.add(modelRenderer, 'factorForce', 0.01, 0.1, 0.01).name(
-					'force');
-			folder1.add(modelRenderer, 'display_scale').name('show scale');
-			folder1.add(modelRenderer, 'rotate').name('rotate');
-			// folder1.open();
+					'Scaling Factor of Force');
+			folder1.add(modelRenderer, 'display_scale').name('show scale').name(
+			'Show Legend');
+			folder1.add(modelRenderer, 'rotate').name('rotate').name(
+			'Rotate by 90°');
+			folder1.open();
 
-			var folder2 = gui.addFolder('Orientation');
+			var folder2 = gui.addFolder('Device Orientation');
 			gui.add(modelRenderer, 'beta', -180.0, 180.0, 0.1).name(
-					'x-axis (beta)');
+					'Rotate Around X-Axis');
 			gui.add(modelRenderer, 'gamma', -180.0, 180.0, 0.1).name(
-					'y-axis (gamma)');
+					'Rotate Around Y-Axis');
 			gui.add(modelRenderer, 'orientation', [ 'normal portrait',
 					'landscape, rotated clockwise',
 					'landscape, rotated counterclockwise',
-					'portrait, upside down' ]);
+					'portrait, upside down' ]).name(
+					'Browser Orientation');
 			folder2.open();
 
 			var canvas = document.getElementById('myGuiCanvas');
