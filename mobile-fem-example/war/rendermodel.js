@@ -1,38 +1,30 @@
 /**
  * Copyright (C) 2012-2013, Markus Sprunck
- *
+ * 
  * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or
- * without modification, are permitted provided that the following
- * conditions are met:
- *
- * - Redistributions of source code must retain the above copyright
- *   notice, this list of conditions and the following disclaimer.
- *
- * - Redistributions in binary form must reproduce the above
- *   copyright notice, this list of conditions and the following
- *   disclaimer in the documentation and/or other materials provided
- *   with the distribution.
- *
- * - The name of its contributor may be used to endorse or promote
- *   products derived from this software without specific prior
- *   written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
- * CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
- * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met: -
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer. - Redistributions in binary
+ * form must reproduce the above copyright notice, this list of conditions and
+ * the following disclaimer in the documentation and/or other materials provided
+ * with the distribution. - The name of its contributor may be used to endorse
+ * or promote products derived from this software without specific prior written
+ * permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ * 
  * 
  */
 
@@ -40,10 +32,11 @@ function ModelRenderer() {
 
 	var offset_x = 200;
 	var offset_y = 150;
+	this.pointNull = new paper.Point(offset_x *1.5, offset_y*1.5);
 
 	var offset_x_scala = 20;
 	var offset_y_scala = 160;
-	
+
 	var scala_size_x = 20;
 	var scala_size_y = 160;
 
@@ -52,20 +45,21 @@ function ModelRenderer() {
 
 	this.factorForce = 0.04;
 	this.factorDisplacement = 1100;
-	
-	this.beta = 0.1;
-	this.gamma = 0.1;
-	
+
+	this.beta = -60.0;
+	this.gamma = 0.0;
+
 	this.rotate = false;
-	
+
 	this.display_scale = true;
-	
+
 	this.orientation = 'unknown';
 
-	var minColor = 20;
-	var maxColor = -20;
+	this.minColor = 20;
+	this.maxColor = -20;
 
 	var frequency = 2.0;
+	
 	function getColor(mean) {
 		mean = -mean;
 		red = Math.sin(frequency * mean + 2) * 127 + 128;
@@ -83,7 +77,8 @@ function ModelRenderer() {
 				+ "0123456789ABCDEF".charAt(n % 16);
 	}
 
-	function draw_scala() {
+	ModelRenderer.prototype.draw_scala = function() {
+
 		var path = new paper.Path();
 		var delta = 0.15;
 		for ( var index = -1.0; index < 1.0; index += delta) {
@@ -101,8 +96,9 @@ function ModelRenderer() {
 					+ scala_size_x * 1.2, offset_y_scala + (-index + delta / 2)
 					* scala_size_y));
 			text.content = ' '
-					+ Math.round(10000 * (minColor + (maxColor - minColor)
-							* index / 2)) / 10000.0 + ' mm';
+					+ Math
+							.round(10000 * (this.minColor + (this.maxColor - this.minColor)
+									* index / 2)) / 10000.0 + ' mm';
 			text.fontSize = 11;
 			text.justification = 'left';
 			text.fillColor = 'white';
@@ -113,94 +109,75 @@ function ModelRenderer() {
 		}
 
 	}
-	
-	// Save the bottom left position of the path's bounding box:
-	var pointNull = new paper.Point(offset_x*2, offset_y*2);
 
 	ModelRenderer.prototype.draw_elements = function(elements) {
+		
+		this.minColor = 100;
+		this.maxColor = -100;
 
-		minColor = 20;
-		maxColor = -20;
-		for ( var ele = 0; ele < elements.length; ele++) {
+		for ( var ele = elements.length-1; ele >= 0; ele--) {
 			var path = new paper.Path();
 			var element;
 			for ( var nodeId = 0; nodeId < elements[ele].length; nodeId++) {
 				element = elements[ele][nodeId];
-				minColor = Math.min(element.deltaArea, minColor);
-				maxColor = Math.max(element.deltaArea, maxColor);
+
+				this.minColor = Math.min(element.deltaArea, this.minColor);
+				this.maxColor = Math.max(element.deltaArea, this.maxColor);
+
 				path.fillColor = getColor(element.deltaAreaColor);
 				var point = new paper.Point(element.x * factorX + offset_x
 						+ element.x_displacement * this.factorDisplacement,
 						element.y * factorY + element.y_displacement
 								* this.factorDisplacement + offset_y);
-				
+
 				path.add(point);
-			
-				if (10.0 < Math.abs(element.x_force) && element.x_fixed) {
-					this.drawVector(point, point.add(new paper.Point(
-							element.x_force * this.factorForce, 0)), true,
-							(element.x_force > 0.0));
+
+				if (element.x_fixed) {
+					this.drawFixedVertical(point);
+					if (30.0 < Math.abs(element.x_force)) {
+						this.drawVector(point, point.add(new paper.Point(
+								element.x_force * this.factorForce, 0)), true,
+								(element.x_force > 0.0));
+					}
 				}
 
-				if (10.0 < Math.abs(element.y_force) && element.y_fixed) {
-					this.drawVector(point, point.add(new paper.Point(0,
-							element.y_force * this.factorForce)), false,
-							(element.y_force > 0.0));
+				if (element.y_fixed) {
+					this.drawFixedHorizontal(point);
+					if (30.0 < Math.abs(element.y_force)) {
+						this.drawVector(point, point.add(new paper.Point(0,
+								element.y_force * this.factorForce)), false,
+								(element.y_force > 0.0));
+					}
 				}
-				this.drawFixed(point, element.y_fixed, element.x_fixed);
 			}
+
 			path.closed = true;
 			path.strokeWidth = 0.5;
 			path.strokeColor = '#0a0a0a';
-			path.selected = false;	
+			path.selected = false;
+
 			if (this.rotate) {
-				path.rotate(90, pointNull);	
+				path.rotate(90, this.pointNull);
 			}
 		}
-
-		for ( var ele = 0; ele < elements.length; ele++) {
-			var path = new paper.Path();
-			for ( var nodeId = 0; nodeId < elements[ele].length; nodeId++) {
-				var element = elements[ele][nodeId];
-				var point = new paper.Point(element.x * factorX + offset_x
-						+ element.x_displacement * this.factorDisplacement,
-						element.y * factorY + element.y_displacement
-								* this.factorDisplacement + offset_y);
-
-				if (10.0 < Math.abs(element.x_force) && element.x_fixed) {
-					this.drawVector(point, point.add(new paper.Point(
-							element.x_force * this.factorForce, 0)), true,
-							(element.x_force > 0.0));
-				}
-
-				if (10.0 < Math.abs(element.y_force) && element.y_fixed) {
-					this.drawVector(point, point.add(new paper.Point(0,
-							element.y_force * this.factorForce)), false,
-							(element.y_force > 0.0));
-				}
-				this.drawFixed(point, element.y_fixed, element.x_fixed)
-			}
-			if (this.rotate) {
-				path.rotate(90, pointNull);	
-			}
-	}
-
-		if (minColor < maxColor && this.display_scale) {
-			draw_scala();
+		
+	
+		if (this.display_scale) {
+			this.draw_scala();
 		}
 	}
 
 	ModelRenderer.prototype.drawVector = function(vectorStart, vectorEnd,
-			horizontal, positive) {
+		horizontal, positive) {
 		var arrow = new paper.Path();
 		arrow.strokeWidth = 0.75;
 		arrow.strokeColor = '#FF0000';
 		arrow.add(vectorStart);
 		arrow.add(vectorEnd);
 		if (this.rotate) {
-			arrow.rotate(90, pointNull);	
+			arrow.rotate(90, this.pointNull);
 		}
-
+	
 		var length = 5;
 		var head = new paper.Path();
 		head.strokeWidth = 0.75;
@@ -224,38 +201,35 @@ function ModelRenderer() {
 			head.add(vectorEnd.add(new paper.Point(length, length)));
 		}
 		if (this.rotate) {
-			head.rotate(90, pointNull);	
+			head.rotate(90, this.pointNull);
 		}
 	}
 
-	ModelRenderer.prototype.drawFixed = function(vectorEnd, horizontal,
-			vertical) {
+	ModelRenderer.prototype.drawFixedVertical = function(vectorEnd) {
 		var length = 10;
-		if (horizontal) {
-			var head = new paper.Path();
-			head.strokeWidth = 0.75;
-			head.strokeColor = '#FFFFFF';
-			head.add(vectorEnd);
-			head.add(vectorEnd.add(new paper.Point(length * 0.75, -length)));
-			head.add(vectorEnd.add(new paper.Point(-length * 0.75, -length)));
-			head.add(vectorEnd);
-			if (this.rotate) {
-				head.rotate(90, pointNull);	
-			}
-		}
-
-		if (vertical) {
-			var head = new paper.Path();
-			head.strokeWidth = 0.75;
-			head.strokeColor = '#FFFFFF';
-			head.add(vectorEnd);
-			head.add(vectorEnd.add(new paper.Point(-length, -length * 0.75)));
-			head.add(vectorEnd.add(new paper.Point(-length, length * 0.75)));
-			head.add(vectorEnd);
-			if (this.rotate) {
-				head.rotate(90, pointNull);	
-			}
+		var head = new paper.Path();
+		head.strokeWidth = 0.75;
+		head.strokeColor = '#FFFFFF';
+		head.add(vectorEnd);
+		head.add(vectorEnd.add(new paper.Point(-length, -length * 0.75)));
+		head.add(vectorEnd.add(new paper.Point(-length, length * 0.75)));
+		head.add(vectorEnd);
+		if (this.rotate) {
+			head.rotate(90, this.pointNull);
 		}
 	}
 
+	ModelRenderer.prototype.drawFixedHorizontal = function(vectorEnd) {
+		var length = 10;
+		var head = new paper.Path();
+		head.strokeWidth = 0.75;
+		head.strokeColor = '#FFFFFF';
+		head.add(vectorEnd);
+		head.add(vectorEnd.add(new paper.Point(length * 0.75, -length)));
+		head.add(vectorEnd.add(new paper.Point(-length * 0.75, -length)));
+		head.add(vectorEnd);
+		if (this.rotate) {
+			head.rotate(90, this.pointNull);
+		}
+	}
 }
