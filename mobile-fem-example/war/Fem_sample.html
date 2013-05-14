@@ -116,8 +116,8 @@
 			// folder1.open();
 
 			var folder2 = gui.addFolder('Orientation');
-			gui.add(modelRenderer, 'beta', -180.0, 180.0).name('x-axis (beta)');
-			gui.add(modelRenderer, 'gamma', -180.0, 180.0).name(
+			gui.add(modelRenderer, 'beta', -180.0, 180.0, 0.1).name('x-axis (beta)');
+			gui.add(modelRenderer, 'gamma', -180.0, 180.0, 0.1).name(
 					'y-axis (gamma)');
 			gui.add(modelRenderer, 'orientation', [ 'normal portrait', 'landscape, rotated clockwise', 'landscape, rotated counterclockwise', 'portrait, upside down' ] );
 			folder2.open();

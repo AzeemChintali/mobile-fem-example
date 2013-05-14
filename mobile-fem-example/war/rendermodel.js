@@ -50,11 +50,11 @@ function ModelRenderer() {
 	var factorX = 3;
 	var factorY = 3;
 
-	this.factorForce = 0.06;
+	this.factorForce = 0.04;
 	this.factorDisplacement = 1100;
 	
-	this.beta = 1.1;
-	this.gamma = 1.1;
+	this.beta = 0.1;
+	this.gamma = 0.1;
 	
 	this.rotate = false;
 	

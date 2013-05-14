@@ -159,8 +159,8 @@ public class ModelUtil {
 		// Set new gravity forces
 		if (Math.abs(beta) >= 0.1 || Math.abs(gamma) >= 0.1) {
 			
-			double xForce = 180.0 * Math.sin(- beta / 180 * Math.PI) / numberOfNodes;
-			double yForce = 180.0 * Math.sin(- gamma / 180 * Math.PI) / numberOfNodes;
+			double xForce = 2000.0 * Math.sin(- beta / 180 * Math.PI) / numberOfNodes;
+			double yForce = 2000.0 * Math.sin(- gamma / 180 * Math.PI) / numberOfNodes;
 
 			final double[] newinputForces = new double[numberOfNodes * 2];
 			for (int nodeId = 1; nodeId <= numberOfNodes; nodeId++) {
@@ -231,9 +231,9 @@ public class ModelUtil {
 	public static String createDefaultModel(FemCore femCore) {
 		final StringBuffer nodeText = new StringBuffer();
 		final int maxCols = 10;
-		final int maxRows = 2;
-		final int scaleFactorX = 12;
-		final int scaleFactorY = 12;
+		final int maxRows = 4;
+		final int scaleFactorX = 10;
+		final int scaleFactorY = 10;
 		for (int col = 1; col <= maxCols; col++) {
 			for (int row = 1; row <= maxRows; row++) {
 				final int nodeId = row + maxRows * (col - 1);
