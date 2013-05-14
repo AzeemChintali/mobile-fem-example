@@ -193,22 +193,18 @@ public class ModelUtil {
 						.append(model.getSolutionNodeForceX(nodeId) //
 						).append(", \"y_force\" : ")
 						.append(model.getSolutionNodeForceY(nodeId) //
-						).append(", \"x_displacement\" : ")
+						).append(", \"x_d\" : ")
 						.append(model.getSolutionNodeDisplacementX(nodeId) //
-						).append(", \"y_displacement\" : ")
+						).append(", \"y_d\" : ")
 						.append(model.getSolutionNodeDisplacementY(nodeId) //
 						).append(", \"x_fixed\" : ")
 						.append(model.isNodeVerticallyFixed(nodeId) //
 						).append(", \"y_fixed\" : ")
 						.append(model.isNodeHorzontallyFixed(nodeId) //
-						).append(", \"first\" : ")
-						.append(!nodeIds.containsKey(nodeId) //
 						).append(", \"x\" : ")
 						.append(model.getNodeIdByElementIdX(elementId, cornerId) //
 						).append(", \"y\" : ")
 						.append(model.getNodeIdByElementIdY(elementId, cornerId) //
-						).append(", \"deltaAreaColor\" : ")
-						.append(model.getSolutionsDisplacementsMeanX(elementId) //
 						).append(", \"deltaArea\" : ").append(model.getSolutionsDisplacementsMeanX(elementId) //
 						).append("  }\n");
 				if (cornerId <= 3) {
@@ -232,8 +228,8 @@ public class ModelUtil {
 		final StringBuffer nodeText = new StringBuffer();
 		final int maxCols = 10;
 		final int maxRows = 4;
-		final int scaleFactorX = 10;
-		final int scaleFactorY = 10;
+		final int scaleFactorX = 30;
+		final int scaleFactorY = 30;
 		for (int col = 1; col <= maxCols; col++) {
 			for (int row = 1; row <= maxRows; row++) {
 				final int nodeId = row + maxRows * (col - 1);
