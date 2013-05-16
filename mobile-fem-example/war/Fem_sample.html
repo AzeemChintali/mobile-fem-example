@@ -73,11 +73,7 @@ h1 {
 			which is then executed in the browser. The experiment has been
 			developed with GWT 2.5 and App Engine SDK 1.7.3. It runs with Chrome
 			Browser under iOS and Android. You may get the source code on <a
-				href="https://github.com/SPM2OT/sw-engineering-candies-mobile-fem-example">GitHub</a>.
-
-
-
-		
+				href="https://github.com/SPM2OT/sw-engineering-candies-mobile-fem-example">GitHub</a>
 	</div>
 
 	<div id="myDatGui" style="position: absolute; top: 0px; left: 100%;"></div>
@@ -102,8 +98,8 @@ h1 {
 		});
 
 		var textblock = document.getElementById('myText');
-
-		function setModel(inputModel) {
+			
+		function resizeElements() {
 			document.getElementById('myCanvas').style.height = ''
 					+ (window.innerHeight - textblock.offsetTop
 							- textblock.clientHeight - 28) + 'px';
@@ -111,6 +107,10 @@ h1 {
 			gui.domElement.style.top = ''
 					+ (textblock.clientHeight + textblock.offsetTop + 15)
 					+ 'px';
+		};
+		window.onresize = resizeElements;		
+
+		function setModel(inputModel) {
 
 			elements = createObjects(inputModel);
 			paper.setup(document.getElementById('myCanvas'));
@@ -118,9 +118,9 @@ h1 {
 			if (!initReady) {
 				modelRenderer = new ModelRenderer();
 				initWindowOrientation();
-
 				initDatGui();
 				initDeviceOrientationEvents();
+				resizeElements();
 				updateDatGui();
 				initReady = true;
 			} else {
