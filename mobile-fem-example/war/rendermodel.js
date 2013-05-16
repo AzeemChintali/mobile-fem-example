@@ -52,7 +52,7 @@ function ModelRenderer() {
 
     this.display_scale = true;
 
-    this.orientation = 'unknown';
+    this.orientation = 'normal portrait';
 
     this.minColor = 20;
     this.maxColor = -20;

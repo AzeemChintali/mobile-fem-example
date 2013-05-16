@@ -9,13 +9,46 @@
 <!--                                           -->
 <title>Mobile FEM Example</title>
 
-	<style>
-         a { color:#009de9; font-family: Helvetica; font-style: normal; font-size:10pt; text-align:left; }	        
-         h1 { color:#FFF; font-family: Helvetica; font-size:14pt; text-align:left;  padding-left:5px;}	        
-         .text { color:#FFF; font-family: Helvetica; font-size:10pt; text-align:left;  padding-left:5px; padding-right:5px;}	        
-	     .warning { color:#F00; font-family: Helvetica; font-size:10pt; text-align:left;  padding-left:5px; padding-right:5px;}	        
-		 .main { background:#252525; padding:0px; }   
-    </style>
+<style>
+a {
+	color: #009de9;
+	font-family: Helvetica;
+	font-style: normal;
+	font-size: 10pt;
+	text-align: left;
+}
+
+h1 {
+	color: #FFF;
+	font-family: Helvetica;
+	font-size: 14pt;
+	text-align: left;
+	padding-left: 5px;
+}
+
+.text {
+	color: #FFF;
+	font-family: Helvetica;
+	font-size: 10pt;
+	text-align: left;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+.warning {
+	color: #F00;
+	font-family: Helvetica;
+	font-size: 10pt;
+	text-align: left;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+.main {
+	background: #252525;
+	padding: 0px;
+}
+</style>
 
 <script type="text/javascript" language="javascript"
 	src="fem_sample/fem_sample.nocache.js"></script>
@@ -28,18 +61,27 @@
 
 <body class="main">
 
-	<h1 class="title">Finite Element Method Simulation - Running in the Browser and Uses Device Orientation</h1>
-    <div id="myText" class="text">
-    				<a href="https://plus.google.com/u/0/117292523089281814301?rel=author">by Markus Sprunck</a><p>
-    				This experiment shows an FEM simulation in the browser. The implementation is based on paper.js and 
-    				Google Web Toolkit. GWT helps to translate the Java code for the FEM simulation into JavaScript, 
-    				which is then executed in the browser. The experiment has been developed with GWT 2.5 and 
-    				App Engine SDK 1.7.3. It runs with Chrome Browser under iOS and Android. You may get the source code on
-    				<a href="https://github.com/SPM2OT/sw-engineering-candies-mobile-fem-example">GitHub</a>.   				
-    </div>
-    
-    <div id="myDatGui" style="position: absolute; top: 0px; left: 100%;"></div>
-    
+	<h1 class="title">Finite Element Method Simulation - Running in
+		the Browser and Uses Device Orientation</h1>
+	<div id="myText" class="text">
+		<a href="https://plus.google.com/u/0/117292523089281814301?rel=author">by
+			Markus Sprunck</a>
+		<p>
+			This experiment shows an FEM simulation in the browser. The
+			implementation is based on paper.js and Google Web Toolkit. GWT helps
+			to translate the Java code for the FEM simulation into JavaScript,
+			which is then executed in the browser. The experiment has been
+			developed with GWT 2.5 and App Engine SDK 1.7.3. It runs with Chrome
+			Browser under iOS and Android. You may get the source code on <a
+				href="https://github.com/SPM2OT/sw-engineering-candies-mobile-fem-example">GitHub</a>.
+
+
+
+		
+	</div>
+
+	<div id="myDatGui" style="position: absolute; top: 0px; left: 100%;"></div>
+
 	<canvas id="myCanvas" style="background-color: black; width: 100%"></canvas>
 
 	<noscript>
@@ -55,28 +97,57 @@
 		var initReady = false;
 
 		// dialog to change parameters
-		var gui = new dat.GUI({ autoPlace: false });
-		
+		var gui = new dat.GUI({
+			autoPlace : false
+		});
+
 		var textblock = document.getElementById('myText');
-		
-			
+
 		function setModel(inputModel) {
-		 	document.getElementById('myCanvas').style.height = ''+(window.innerHeight-textblock.offsetTop-textblock.clientHeight-28)+'px';			
-		 	elements = createObjects(inputModel);
-			paper.setup( document.getElementById('myCanvas'));
+			document.getElementById('myCanvas').style.height = ''
+					+ (window.innerHeight - textblock.offsetTop
+							- textblock.clientHeight - 28) + 'px';
+
+			gui.domElement.style.top = ''
+					+ (textblock.clientHeight + textblock.offsetTop + 15)
+					+ 'px';
+
+			elements = createObjects(inputModel);
+			paper.setup(document.getElementById('myCanvas'));
 
 			if (!initReady) {
 				modelRenderer = new ModelRenderer();
+				initWindowOrientation();
+
 				initDatGui();
 				initDeviceOrientationEvents();
 				updateDatGui();
 				initReady = true;
-			}
-			else {
+			} else {
 				modelRenderer.draw_elements(elements);
 				paper.view.draw();
-				
-			}		
+
+			}
+		}
+
+		function initWindowOrientation() {
+			orient = window.orientation;
+
+			var ua = navigator.userAgent.toLowerCase();
+			var isAndroid = ua.indexOf("android") > -1;
+			if (!orient && isAndroid) {
+				orient -= 90;
+			}
+
+			if (!orient || orient === 0) {
+				modelRenderer.orientation = 'normal portrait';
+			} else if (orient === -90) {
+				modelRenderer.orientation = 'landscape, rotated clockwise';
+			} else if (orient === 90) {
+				modelRenderer.orientation = 'landscape, rotated counterclockwise';
+			} else if (orient === 180) {
+				modelRenderer.orientation = 'portrait, upside down';
+			}
 		}
 
 		function initDeviceOrientationEvents() {
@@ -87,45 +158,33 @@
 								function(eventData) {
 									var beta;
 									var gamma;
-									var orient = window.orientation;
-									
-									// Special case for Android devices
-									var ua = navigator.userAgent.toLowerCase();
-							        var isAndroid = ua.indexOf("android") > -1; 
-									if (!orient && isAndroid) {
-										orient -= 90;
-									}
-							        
-									if (!orient || orient === 0) { // normal portrait orientation
+
+									if (modelRenderer.orientation == 'normal portrait') {
 										beta = -eventData.beta;
 										gamma = -eventData.gamma;
-										modelRenderer.orientation = 'normal portrait';
-									} else if (orient === -90) { // landscape, rotated clockwise
+									} else if (modelRenderer.orientation == 'landscape, rotated clockwise') {
 										beta = -eventData.gamma;
 										gamma = eventData.beta;
-										modelRenderer.orientation = 'landscape, rotated clockwise';
-									} else if (orient === 90) { // landscape, rotated counterclockwise
+									} else if (modelRenderer.orientation == 'landscape, rotated counterclockwise') {
 										beta = eventData.gamma;
 										gamma = -eventData.beta;
-										modelRenderer.orientation = 'landscape, rotated counterclockwise';
-									} else if (orient === 180) { // portrait, upside down
+									} else if (modelRenderer.orientation == 'portrait, upside down') {
 										beta = eventData.beta;
 										gamma = eventData.gamma;
-										modelRenderer.orientation = 'portrait, upside down';
 									}
-									
+
 									if (modelRenderer.rotate) {
 										temp = gamma;
 										gamma = beta;
 										beta = -temp;
 									}
-									
+
 									if (initReady) {
 										modelRenderer.beta = beta;
 										modelRenderer.gamma = gamma;
 										window.updateForces();
 									}
-									
+
 								}, false);
 			}
 		}
@@ -154,31 +213,33 @@
 					'Scaling Factor Displacements');
 			folder1.add(modelRenderer, 'factorForce', 0.01, 0.1, 0.01).name(
 					'Scaling Factor Forces');
-			folder1.add(modelRenderer, 'display_scale').name('show scale').name(
-			'Show Legend');
+			folder1.add(modelRenderer, 'display_scale').name('show scale')
+					.name('Show Legend');
 			folder1.add(modelRenderer, 'rotate').name('rotate').name(
-			'Rotate by 90°');
-			folder1.open();
+					'Rotate by 90°');
 
 			var folder2 = gui.addFolder('Device Orientation');
 			gui.add(modelRenderer, 'beta', -180.0, 180.0, 0.1).name(
 					'Rotate Around X-Axis');
 			gui.add(modelRenderer, 'gamma', -180.0, 180.0, 0.1).name(
 					'Rotate Around Y-Axis');
-			gui.add(modelRenderer, 'orientation', [ 'normal portrait',
-					'landscape, rotated clockwise',
-					'landscape, rotated counterclockwise',
-					'portrait, upside down' ]).name(
+			gui.add(
+					modelRenderer,
+					'orientation',
+					[ 'normal portrait', 'landscape, rotated clockwise',
+							'landscape, rotated counterclockwise',
+							'portrait, upside down' ]).name(
 					'Browser Orientation');
 			folder2.open();
 
-			
 			var canvas = document.getElementById('myDatGui');
 			gui.domElement.style.position = 'absolute';
 			gui.domElement.style.right = '20px';
-			gui.domElement.style.top = ''+(textblock.clientHeight+textblock.offsetTop+15)+'px';
+			gui.domElement.style.top = ''
+					+ (textblock.clientHeight + textblock.offsetTop + 15)
+					+ 'px';
 			gui.domElement.style.width = '420px';
-			canvas.appendChild(gui.domElement);						
+			canvas.appendChild(gui.domElement);
 		}
 
 		// Iterate over all DAT.GUI controllers
@@ -191,7 +252,7 @@
 		}
 	</script>
 
-			
+
 
 </body>
 </html>
