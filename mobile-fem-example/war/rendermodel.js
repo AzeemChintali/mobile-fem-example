@@ -45,7 +45,7 @@ function ModelRenderer() {
 	this.factorForce = 0.04;
 	this.factorDisplacement = 1100;
 
-	this.beta = -60.0;
+	this.beta = 0.0;
 	this.gamma = 0.0;
 
 	this.rotate = false;

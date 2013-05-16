@@ -41,7 +41,7 @@ public class CallbackUtilityClass {
 
 	final static FemCore model = new FemCore();
 
-	static Double currentBeta = -60.0;
+	static Double currentBeta = 0.0;
 
 	static Double currentGamma = 0.0;
 
