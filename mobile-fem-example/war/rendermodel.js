@@ -30,186 +30,198 @@
 
 function ModelRenderer() {
 
-    var offset_x = 200;
-    var offset_y = 150;
-    var delta = 0.15;
+	var offset_x = 200;
+	var offset_y = 150;
+	var delta = 0.15;
 
-    this.pointNull = new paper.Point(offset_x * 1.5, offset_y * 1.5);
+	this.pointNull = new paper.Point(offset_x * 1.5, offset_y * 1.5);
 
-    var offset_x_scala = 20;
-    var offset_y_scala = 160;
+	var offset_x_scala = 20;
+	var offset_y_scala = 160;
 
-    var scala_size_x = 20;
-    var scala_size_y = 160;
+	var scala_size_x = 20;
+	var scala_size_y = 160;
 
-    this.factorForce = 0.04;
-    this.factorDisplacement = 1100;
+	this.factorForce = 0.04;
+	this.factorDisplacement = 1100;
 
-    this.beta = -60.0;
-    this.gamma = 0.0;
+	this.beta = -60.0;
+	this.gamma = 0.0;
 
-    this.rotate = false;
+	this.rotate = false;
 
-    this.display_scale = true;
+	this.display_scale = true;
 
-    this.orientation = 'normal portrait';
+	this.orientation = 'normal portrait';
 
-    this.minColor = 20;
-    this.maxColor = -20;
+	this.minColor = 20;
+	this.maxColor = -20;
 
-    function getColor(mean) {
-	mean = -2.0 * mean;
-	red = Math.sin(mean + 2) * 127 + 128;
-	green = Math.sin(mean + 1) * 127 + 128;
-	blue = Math.sin(mean + 4) * 127 + 128;
-	return '#' + toHex(red) + toHex(green) + toHex(blue);
-    }
-
-    function toHex(n) {
-	return "0123456789ABCDEF".charAt((n - n % 16) / 16) + "0123456789ABCDEF".charAt(n % 16);
-    }
-
-    ModelRenderer.prototype.draw_scala_color = function() {
-	for ( var index = -1.0; index < 1.0; index += delta) {
-	    var path = new paper.Path();
-	    path.add(new paper.Point(offset_x_scala, offset_y_scala + (-index + delta) * scala_size_y));
-	    path.add(new paper.Point(offset_x_scala, offset_y_scala - index * scala_size_y));
-	    path.add(new paper.Point(offset_x_scala + scala_size_x, offset_y_scala - index * scala_size_y));
-	    path.add(new paper.Point(offset_x_scala + scala_size_x, offset_y_scala + (-index + delta) * scala_size_y));
-	    path.strokeWidth = 0.5;
-	    path.fillColor = getColor(index);
-	    path.selected = false;
+	function getColor(mean) {
+		mean = -2.0 * mean;
+		red = Math.sin(mean + 2) * 127 + 128;
+		green = Math.sin(mean + 1) * 127 + 128;
+		blue = Math.sin(mean + 4) * 127 + 128;
+		return '#' + toHex(red) + toHex(green) + toHex(blue);
 	}
-    }
 
-    ModelRenderer.prototype.draw_scala_text = function() {
-	x = offset_x_scala + scala_size_x * 1.2;
-	for ( var index = -1.0; index < 1.0; index += delta) {
-	    var point = new paper.Point(x, offset_y_scala + (-index + delta / 2) * scala_size_y);
-	    var text = new paper.PointText(point);
-	    text.content = ' ' + Math.round(1000 * (this.minColor + (this.maxColor - this.minColor) * index / 2))
-		    / 1000.0 + ' mm';
-	    text.fontSize = 11;
-	    text.justification = 'left';
-	    text.fillColor = 'white';
+	function toHex(n) {
+		return "0123456789ABCDEF".charAt((n - n % 16) / 16)
+				+ "0123456789ABCDEF".charAt(n % 16);
 	}
-    }
 
-    ModelRenderer.prototype.draw_elements = function(elements) {
+	ModelRenderer.prototype.draw_scala_color = function() {
+		for ( var index = -1.0; index < 1.0; index += delta) {
+			var path = new paper.Path();
+			path.add(new paper.Point(offset_x_scala, offset_y_scala
+					+ (-index + delta) * scala_size_y));
+			path.add(new paper.Point(offset_x_scala, offset_y_scala - index
+					* scala_size_y));
+			path.add(new paper.Point(offset_x_scala + scala_size_x,
+					offset_y_scala - index * scala_size_y));
+			path.add(new paper.Point(offset_x_scala + scala_size_x,
+					offset_y_scala + (-index + delta) * scala_size_y));
+			path.strokeWidth = 0.5;
+			path.fillColor = getColor(index);
+			path.selected = false;
+		}
+	}
 
-	this.minColor = 100;
-	this.maxColor = -100;
+	ModelRenderer.prototype.draw_scala_text = function() {
+		x = offset_x_scala + scala_size_x * 1.2;
+		for ( var index = -1.0; index < 1.0; index += delta) {
+			var point = new paper.Point(x, offset_y_scala
+					+ (-index + delta / 2) * scala_size_y);
+			var text = new paper.PointText(point);
+			text.content = ' '
+					+ Math
+							.round(1000 * (this.minColor + (this.maxColor - this.minColor)
+									* index / 2)) / 1000.0 + ' mm';
+			text.fontSize = 11;
+			text.justification = 'left';
+			text.fillColor = 'white';
+		}
+	}
 
-	for ( var ele = elements.length - 1; ele >= 0; ele--) {
-	    var path = new paper.Path();
-	    path.strokeWidth = 0.5;
-	    path.strokeColor = '#0a0a0a';
-	    path.selected = false;
+	ModelRenderer.prototype.draw_elements = function(elements) {
 
-	    var deltaArea = elements[ele][0].deltaArea;
-	    this.minColor = Math.min(deltaArea, this.minColor);
-	    this.maxColor = Math.max(deltaArea, this.maxColor);
-	    path.fillColor = getColor(deltaArea);
+		this.minColor = 100;
+		this.maxColor = -100;
 
-	    for ( var nodeId = 0; nodeId < 3; nodeId++) {
-		element = elements[ele][nodeId];
+		for ( var ele = elements.length - 1; ele >= 0; ele--) {
+			var path = new paper.Path();
+			path.strokeWidth = 0.5;
+			path.strokeColor = '#0a0a0a';
+			path.selected = false;
 
-		var point = new paper.Point(element.x + offset_x + element.x_d * this.factorDisplacement, element.y
-			+ element.y_d * this.factorDisplacement + offset_y);
+			var deltaArea = elements[ele][0].deltaArea;
+			this.minColor = Math.min(deltaArea, this.minColor);
+			this.maxColor = Math.max(deltaArea, this.maxColor);
+			path.fillColor = getColor(deltaArea);
 
-		path.add(point);
+			for ( var nodeId = 0; nodeId < 3; nodeId++) {
+				element = elements[ele][nodeId];
 
-		if (element.x_fixed) {
-		    this.drawFixedVertical(point);
-		    if (30.0 < Math.abs(element.x_force)) {
-			this.drawVector(point, point.add(new paper.Point(element.x_force * this.factorForce, 0)), true,
-				(element.x_force > 0.0));
-		    }
+				var point = new paper.Point(element.x + offset_x + element.x_d
+						* this.factorDisplacement, element.y + element.y_d
+						* this.factorDisplacement + offset_y);
+
+				path.add(point);
+
+				if (element.x_fixed) {
+					this.drawFixedVertical(point);
+					if (30.0 < Math.abs(element.x_force)) {
+						this.drawVector(point, point.add(new paper.Point(
+								element.x_force * this.factorForce, 0)), true,
+								(element.x_force > 0.0));
+					}
+				}
+
+				if (element.y_fixed) {
+					this.drawFixedHorizontal(point);
+					if (30.0 < Math.abs(element.y_force)) {
+						this.drawVector(point, point.add(new paper.Point(0,
+								element.y_force * this.factorForce)), false,
+								(element.y_force > 0.0));
+					}
+				}
+			}
+
+			if (this.rotate) {
+				path.rotate(90, this.pointNull);
+			}
 		}
 
-		if (element.y_fixed) {
-		    this.drawFixedHorizontal(point);
-		    if (30.0 < Math.abs(element.y_force)) {
-			this.drawVector(point, point.add(new paper.Point(0, element.y_force * this.factorForce)),
-				false, (element.y_force > 0.0));
-		    }
+		if (this.display_scale) {
+			this.draw_scala_color();
+			this.draw_scala_text();
 		}
-	    }
-
-	    if (this.rotate) {
-		path.rotate(90, this.pointNull);
-	    }
 	}
 
-	if (this.display_scale) {
-	    this.draw_scala_color();
-	    this.draw_scala_text();
-	}
-    }
+	ModelRenderer.prototype.drawVector = function(vectorStart, vectorEnd,
+			horizontal, positive) {
+		var arrow = new paper.Path();
+		arrow.strokeWidth = 0.75;
+		arrow.strokeColor = '#FF0000';
+		arrow.add(vectorStart);
+		arrow.add(vectorEnd);
+		if (this.rotate) {
+			arrow.rotate(90, this.pointNull);
+		}
 
-    ModelRenderer.prototype.drawVector = function(vectorStart, vectorEnd, horizontal, positive) {
-	var arrow = new paper.Path();
-	arrow.strokeWidth = 0.75;
-	arrow.strokeColor = '#FF0000';
-	arrow.add(vectorStart);
-	arrow.add(vectorEnd);
-	if (this.rotate) {
-	    arrow.rotate(90, this.pointNull);
+		var length = 5;
+		var head = new paper.Path();
+		head.strokeWidth = 0.75;
+		head.strokeColor = '#FF0000';
+		head.add(vectorEnd);
+		if (horizontal && !positive) {
+			head.add(vectorEnd.add(new paper.Point(length, -length)));
+			head.add(vectorEnd);
+			head.add(vectorEnd.add(new paper.Point(length, length)));
+		} else if (horizontal && positive) {
+			head.add(vectorEnd.add(new paper.Point(-length, -length)));
+			head.add(vectorEnd);
+			head.add(vectorEnd.add(new paper.Point(-length, length)));
+		} else if (!horizontal && positive) {
+			head.add(vectorEnd.add(new paper.Point(length, -length)));
+			head.add(vectorEnd);
+			head.add(vectorEnd.add(new paper.Point(-length, -length)));
+		} else if (!horizontal && !positive) {
+			head.add(vectorEnd.add(new paper.Point(-length, length)));
+			head.add(vectorEnd);
+			head.add(vectorEnd.add(new paper.Point(length, length)));
+		}
+		if (this.rotate) {
+			head.rotate(90, this.pointNull);
+		}
 	}
 
-	var length = 5;
-	var head = new paper.Path();
-	head.strokeWidth = 0.75;
-	head.strokeColor = '#FF0000';
-	head.add(vectorEnd);
-	if (horizontal && !positive) {
-	    head.add(vectorEnd.add(new paper.Point(length, -length)));
-	    head.add(vectorEnd);
-	    head.add(vectorEnd.add(new paper.Point(length, length)));
-	} else if (horizontal && positive) {
-	    head.add(vectorEnd.add(new paper.Point(-length, -length)));
-	    head.add(vectorEnd);
-	    head.add(vectorEnd.add(new paper.Point(-length, length)));
-	} else if (!horizontal && positive) {
-	    head.add(vectorEnd.add(new paper.Point(length, -length)));
-	    head.add(vectorEnd);
-	    head.add(vectorEnd.add(new paper.Point(-length, -length)));
-	} else if (!horizontal && !positive) {
-	    head.add(vectorEnd.add(new paper.Point(-length, length)));
-	    head.add(vectorEnd);
-	    head.add(vectorEnd.add(new paper.Point(length, length)));
+	ModelRenderer.prototype.drawFixedVertical = function(vectorEnd) {
+		var length = 10;
+		var head = new paper.Path();
+		head.strokeWidth = 0.75;
+		head.strokeColor = '#FFFFFF';
+		head.add(vectorEnd);
+		head.add(vectorEnd.add(new paper.Point(-length, -length * 0.75)));
+		head.add(vectorEnd.add(new paper.Point(-length, length * 0.75)));
+		head.add(vectorEnd);
+		if (this.rotate) {
+			head.rotate(90, this.pointNull);
+		}
 	}
-	if (this.rotate) {
-	    head.rotate(90, this.pointNull);
-	}
-    }
 
-    ModelRenderer.prototype.drawFixedVertical = function(vectorEnd) {
-	var length = 10;
-	var head = new paper.Path();
-	head.strokeWidth = 0.75;
-	head.strokeColor = '#FFFFFF';
-	head.add(vectorEnd);
-	head.add(vectorEnd.add(new paper.Point(-length, -length * 0.75)));
-	head.add(vectorEnd.add(new paper.Point(-length, length * 0.75)));
-	head.add(vectorEnd);
-	if (this.rotate) {
-	    head.rotate(90, this.pointNull);
+	ModelRenderer.prototype.drawFixedHorizontal = function(vectorEnd) {
+		var length = 10;
+		var head = new paper.Path();
+		head.strokeWidth = 0.75;
+		head.strokeColor = '#FFFFFF';
+		head.add(vectorEnd);
+		head.add(vectorEnd.add(new paper.Point(length * 0.75, -length)));
+		head.add(vectorEnd.add(new paper.Point(-length * 0.75, -length)));
+		head.add(vectorEnd);
+		if (this.rotate) {
+			head.rotate(90, this.pointNull);
+		}
 	}
-    }
-
-    ModelRenderer.prototype.drawFixedHorizontal = function(vectorEnd) {
-	var length = 10;
-	var head = new paper.Path();
-	head.strokeWidth = 0.75;
-	head.strokeColor = '#FFFFFF';
-	head.add(vectorEnd);
-	head.add(vectorEnd.add(new paper.Point(length * 0.75, -length)));
-	head.add(vectorEnd.add(new paper.Point(-length * 0.75, -length)));
-	head.add(vectorEnd);
-	if (this.rotate) {
-	    head.rotate(90, this.pointNull);
-	}
-    }
 
 }

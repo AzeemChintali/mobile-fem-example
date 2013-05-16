@@ -98,7 +98,7 @@ h1 {
 		});
 
 		var textblock = document.getElementById('myText');
-			
+
 		function resizeElements() {
 			document.getElementById('myCanvas').style.height = ''
 					+ (window.innerHeight - textblock.offsetTop
@@ -108,7 +108,7 @@ h1 {
 					+ (textblock.clientHeight + textblock.offsetTop + 15)
 					+ 'px';
 		};
-		window.onresize = resizeElements;		
+		window.onresize = resizeElements;
 
 		function setModel(inputModel) {
 
@@ -126,7 +126,6 @@ h1 {
 			} else {
 				modelRenderer.draw_elements(elements);
 				paper.view.draw();
-
 			}
 		}
 
