@@ -61,17 +61,14 @@ h1 {
 
 <body class="main">
 
-	<h1 class="title">Finite Element Method Simulation - Running in
+	<h1 class="title">Minimal Finite Element Method Simulation - Running in
 		the Browser and Uses Device Orientation</h1>
 	<div id="myText" class="text">
 		<a href="https://plus.google.com/u/0/117292523089281814301?rel=author">by
 			Markus Sprunck</a>
 		<p>
-			This experiment shows an FEM simulation in the browser. The
-			implementation is based on paper.js and Google Web Toolkit. GWT helps
-			to translate the Java code for the FEM simulation into JavaScript,
-			which is then executed in the browser. The experiment has been
-			developed with GWT 2.5 and App Engine SDK 1.7.3. It runs with Chrome
+			The	implementation is based on paper.js and Google Web Toolkit.The experiment 
+			has been developed with GWT 2.5 and App Engine SDK 1.7.3. It's tested with Chrome
 			Browser under iOS and Android. You may get the source code on <a
 				href="https://github.com/SPM2OT/sw-engineering-candies-mobile-fem-example">GitHub</a>
 	</div>
@@ -96,6 +93,7 @@ h1 {
 		var gui = new dat.GUI({
 			autoPlace : false
 		});
+		var folder1;
 
 		var textblock = document.getElementById('myText');
 
@@ -109,6 +107,20 @@ h1 {
 					+ 'px';
 			
 			initWindowOrientation();
+			
+			if (window.innerWidth < 768) {
+				folder1.close();
+				gui.close();
+				if (window.innerWidth < window.innerHeight) {
+					modelRenderer.offset_x = 40;
+					modelRenderer.offset_y = 320;
+					modelRenderer.rotate = true;
+				} else {
+					modelRenderer.offset_x = 60;
+					modelRenderer.offset_y = 20;
+			   		modelRenderer.rotate = false;
+				}
+			}
 		};
 		window.onresize = resizeElements;
 
@@ -135,13 +147,6 @@ h1 {
 
 		function initWindowOrientation() {
 			orient = window.orientation;
-
-			var ua = navigator.userAgent.toLowerCase();
-			var isAndroid = ua.indexOf("android") > -1;
-			if (!orient && isAndroid) {
-				orient -= 90;
-			}
-
 			if (!orient || orient === 0) {
 				modelRenderer.orientation = 'normal portrait';
 			} else if (orient === -90) {
@@ -211,7 +216,7 @@ h1 {
 		}
 
 		function initDatGui() {
-			var folder1 = gui.addFolder('Display Options');
+			folder1 = gui.addFolder('Display Options');
 			folder1.add(modelRenderer, 'factorDisplacement', 1, 2000, 1).name(
 					'Scaling Factor Displacements');
 			folder1.add(modelRenderer, 'factorForce', 0.01, 0.1, 0.01).name(

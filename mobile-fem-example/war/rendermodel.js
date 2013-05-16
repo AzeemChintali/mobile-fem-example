@@ -30,14 +30,14 @@
 
 function ModelRenderer() {
 
-	var offset_x = 200;
-	var offset_y = 150;
+	this.offset_x = 90;
+	this.offset_y = 320;
 	var delta = 0.15;
 
-	this.pointNull = new paper.Point(offset_x * 1.5, offset_y * 1.5);
+	this.pointNull = new paper.Point(this.offset_x*4, this.offset_y );
 
 	var offset_x_scala = 20;
-	var offset_y_scala = 160;
+	var offset_y_scala = 180;
 
 	var scala_size_x = 20;
 	var scala_size_y = 160;
@@ -122,9 +122,9 @@ function ModelRenderer() {
 			for ( var nodeId = 0; nodeId < 3; nodeId++) {
 				element = elements[ele][nodeId];
 
-				var point = new paper.Point(element.x + offset_x + element.x_d
+				var point = new paper.Point(element.x + this.offset_x + element.x_d
 						* this.factorDisplacement, element.y + element.y_d
-						* this.factorDisplacement + offset_y);
+						* this.factorDisplacement + this.offset_y);
 
 				path.add(point);
 
