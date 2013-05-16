@@ -115,7 +115,8 @@ h1 {
 		function setModel(inputModel) {
 
 			elements = createObjects(inputModel);
-			paper.setup(document.getElementById('myCanvas'));
+			canvas = document.getElementById('myCanvas');
+			paper.setup(canvas);			
 
 			if (!initReady) {
 				modelRenderer = new ModelRenderer();
@@ -126,6 +127,7 @@ h1 {
 				updateDatGui();
 				initReady = true;
 			} else {
+				paper.view.viewSize = [canvas.scrollWidth, canvas.scrollHeight]; 
 				modelRenderer.draw_elements(elements);
 				paper.view.draw();
 			}
@@ -218,7 +220,8 @@ h1 {
 					.name('Show Legend');
 			folder1.add(modelRenderer, 'rotate').name('rotate').name(
 					'Rotate by 90°');
-
+			folder1.open();
+			
 			var folder2 = gui.addFolder('Device Orientation');
 			gui.add(modelRenderer, 'beta', -180.0, 180.0, 0.1).name(
 					'Rotate Around X-Axis');
