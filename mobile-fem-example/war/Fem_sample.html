@@ -61,16 +61,20 @@ h1 {
 
 <body class="main">
 
-	<h1 class="title">Minimal Finite Element Method Simulation - Running in
-		the Browser and Uses Device Orientation</h1>
+	<h1 class="title">Minimal Finite Element Method Simulation -
+		Running in the Browser and Uses Device Orientation</h1>
 	<div id="myText" class="text">
 		<a href="https://plus.google.com/u/0/117292523089281814301?rel=author">by
 			Markus Sprunck</a>
 		<p>
-			The	implementation is based on paper.js and Google Web Toolkit.The experiment 
-			has been developed with GWT 2.5 and App Engine SDK 1.7.3. It's tested with Chrome
-			Browser under iOS and Android. You may get the source code on <a
+			The implementation is based on paper.js and Google Web Toolkit.The
+			experiment has been developed with GWT 2.5 and App Engine SDK 1.7.3.
+			It's tested with Chrome Browser under iOS and Android. You may get
+			the source code on <a
 				href="https://github.com/SPM2OT/sw-engineering-candies-mobile-fem-example">GitHub</a>
+			or read more on <a
+				href="http://www.sw-engineering-candies.com/blog-1/finite-element-method-simulation-running-in-the-browser-and-uses-device-orientation">Software
+				Engineering Candies</a> site.
 	</div>
 
 	<div id="myDatGui" style="position: absolute; top: 0px; left: 100%;"></div>
@@ -105,9 +109,9 @@ h1 {
 			gui.domElement.style.top = ''
 					+ (textblock.clientHeight + textblock.offsetTop + 15)
 					+ 'px';
-			
+
 			initWindowOrientation();
-			
+
 			if (window.innerWidth < 768) {
 				folder1.close();
 				gui.close();
@@ -118,7 +122,7 @@ h1 {
 				} else {
 					modelRenderer.offset_x = 60;
 					modelRenderer.offset_y = 20;
-			   		modelRenderer.rotate = false;
+					modelRenderer.rotate = false;
 				}
 			}
 		};
@@ -128,7 +132,7 @@ h1 {
 
 			elements = createObjects(inputModel);
 			canvas = document.getElementById('myCanvas');
-			paper.setup(canvas);			
+			paper.setup(canvas);
 
 			if (!initReady) {
 				modelRenderer = new ModelRenderer();
@@ -139,7 +143,7 @@ h1 {
 				updateDatGui();
 				initReady = true;
 			} else {
-				paper.view.viewSize = [canvas.scrollWidth, canvas.scrollHeight]; 
+				paper.view.viewSize = [ canvas.scrollWidth, canvas.scrollHeight ];
 				modelRenderer.draw_elements(elements);
 				paper.view.draw();
 			}
@@ -226,7 +230,7 @@ h1 {
 			folder1.add(modelRenderer, 'rotate').name('rotate').name(
 					'Rotate by 90°');
 			folder1.open();
-			
+
 			var folder2 = gui.addFolder('Device Orientation');
 			gui.add(modelRenderer, 'beta', -180.0, 180.0, 0.1).name(
 					'Rotate Around X-Axis');
