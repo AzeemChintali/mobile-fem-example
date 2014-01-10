@@ -52,16 +52,16 @@ public class FemCore {
 	private final double youngsModulus = 1.6E+05f;
 
 	// Vector if input forces in N (size is 2*numberOfNodes for 2D)
-	private Matrix inputForces;
+	private Vector inputForces;
 
 	// Vector if input displacements in mm (size is 2*numberOfNodes for 2D)
-	private Matrix inputDisplacements;
+	private Vector inputDisplacements;
 
 	// Stiffness matrix of all elements
-	private MatrixBanded originalStiffnessMatrix;
+	private BandMatrix originalStiffnessMatrix;
 
 	// Stiffness matrix with replaced of all known forces (see inputForces)
-	private MatrixBanded rearangedStiffnessMatrix;
+	private BandMatrix rearangedStiffnessMatrix;
 
 	// Resulting forces in N
 	private double[] solutionForces;
@@ -92,11 +92,11 @@ public class FemCore {
 
 		final double[][] stiffnesMatrix = createGlobalStiffnessMatrix();
 
-		originalStiffnessMatrix = new MatrixBanded(stiffnesMatrix);
+		originalStiffnessMatrix = new BandMatrix(stiffnesMatrix);
 
 		rearangeGlobalStiffnesMatrix(stiffnesMatrix);
 
-		rearangedStiffnessMatrix = new MatrixBanded(stiffnesMatrix);
+		rearangedStiffnessMatrix = new BandMatrix(stiffnesMatrix);
 
 		final double end = System.currentTimeMillis();
 		System.out.println("stiffness matrix created [" + (end - start) + "ms]");
@@ -105,7 +105,7 @@ public class FemCore {
 	public void solveLinearEquations(double[] newInputForces) {
 
 		if (null != newInputForces) {
-			inputForces = new Matrix(newInputForces).transpose();
+			inputForces = new Vector(newInputForces);
 		}
 
 		if (null == originalStiffnessMatrix && null == rearangedStiffnessMatrix) {
@@ -113,12 +113,10 @@ public class FemCore {
 			return;
 		}
 
-		final Matrix x = MatrixBanded.solveConjugateGradient(rearangedStiffnessMatrix, inputForces, solutionsDisplacements,
-				MAX_NUMBER_OF_ITTERATONS);
-		solutionsDisplacements = x.transpose().getData()[0];
-		final Matrix b2 = new Matrix(solutionsDisplacements).transpose();
-		final Matrix x2 = originalStiffnessMatrix.times(b2).transpose();
-		solutionForces = x2.getData()[0];
+		final Vector x = BandMatrix.solveConjugateGradient(rearangedStiffnessMatrix, inputForces);
+		solutionsDisplacements = x.values;
+		final Vector x2 = originalStiffnessMatrix.times(x);
+		solutionForces = x2.values;
 		calculateSolutionsDisplacementsMeanX();
 	}
 
@@ -368,8 +366,8 @@ public class FemCore {
 
 		// Now all forces are known and will be reseted to zero
 		for (nodeID = 0; nodeID < numberOfNodes * 2; nodeID++) {
-			if (Double.isNaN(inputForces.getValue(nodeID, 0))) {
-				inputForces.setValue(nodeID, 0, 0.0);
+			if (Double.isNaN(inputForces.getValue(nodeID))) {
+				inputForces.setValue(nodeID, 0.0);
 			}
 		}
 	}
@@ -386,7 +384,7 @@ public class FemCore {
 		return solutionsDisplacementsMeanX[elementId - 1];
 	}
 
-	public Matrix getInputForces() {
+	public Vector getInputForces() {
 		return inputForces;
 	}
 
@@ -394,7 +392,7 @@ public class FemCore {
 		return solutionsDisplacements;
 	}
 
-	public Matrix getInputDisplacements() {
+	public Vector getInputDisplacements() {
 		return inputDisplacements;
 	}
 
@@ -427,35 +425,35 @@ public class FemCore {
 	}
 
 	public double getNodeForceY(int nodeId) {
-		return inputForces.getValue(nodeId * 2 - 1, 0);
+		return inputForces.getValue(nodeId * 2 - 1);
 	}
 
 	public double getNodeForceX(int nodeId) {
-		return inputForces.getValue(nodeId * 2 - 2, 0);
+		return inputForces.getValue(nodeId * 2 - 2);
 	}
 
 	private double getNodeDisplacementY(int nodeId) {
-		return inputDisplacements.getValue(nodeId * 2 - 1, 0);
+		return inputDisplacements.getValue(nodeId * 2 - 1);
 	}
 
 	private double getNodeDisplacementX(int nodeId) {
-		return inputDisplacements.getValue(nodeId * 2 - 2, 0);
+		return inputDisplacements.getValue(nodeId * 2 - 2);
 	}
 
 	public void setNodeForceY(int nodeId, double value) {
-		inputForces.setValue(nodeId * 2 - 1, 0, value);
+		inputForces.setValue(nodeId * 2 - 1, value);
 	}
 
 	public void setNodeForceX(int nodeId, double value) {
-		inputForces.setValue(nodeId * 2 - 2, 0, value);
+		inputForces.setValue(nodeId * 2 - 2, value);
 	}
 
 	public boolean isNodeHorzontallyFixed(int nodeId) {
-		return !Double.isNaN(inputDisplacements.getValue(nodeId * 2 - 1, 0));
+		return !Double.isNaN(inputDisplacements.getValue(nodeId * 2 - 1));
 	}
 
 	public boolean isNodeVerticallyFixed(int nodeId) {
-		return !Double.isNaN(inputDisplacements.getValue(nodeId * 2 - 2, 0));
+		return !Double.isNaN(inputDisplacements.getValue(nodeId * 2 - 2));
 	}
 
 	public void incementNumberOfNodes() {
@@ -471,15 +469,15 @@ public class FemCore {
 		for (int i = 0; i < numberOfNodes * 2; i++) {
 			newInputDisplacements[i] = Double.NaN;
 		}
-		inputDisplacements = new Matrix(newInputDisplacements).transpose();
+		inputDisplacements = new Vector(newInputDisplacements);
 	}
 
 	public void setInputDisplacementX(int nodeId, Double value) {
-		inputDisplacements.setValue(nodeId * 2 - 2, 0, value);
+		inputDisplacements.setValue(nodeId * 2 - 2, value);
 	}
 
 	public void setInputDisplacementY(int nodeId, Double value) {
-		inputDisplacements.setValue(nodeId * 2 - 1, 0, value);
+		inputDisplacements.setValue(nodeId * 2 - 1, value);
 	}
 
 	public void resetInputForces() {
@@ -487,7 +485,7 @@ public class FemCore {
 		for (int i = 0; i < numberOfNodes * 2; i++) {
 			newInputForces[i] = Double.NaN;
 		}
-		inputForces = new Matrix(newInputForces).transpose();
+		inputForces = new Vector(newInputForces);
 	}
 
 	public void initRest() {

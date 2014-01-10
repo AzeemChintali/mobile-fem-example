@@ -30,8 +30,8 @@
 
 function ModelRenderer() {
 
-	this.offset_x = 90;
-	this.offset_y = 320;
+	this.offset_x = 80;
+	this.offset_y = 300;
 	var delta = 0.15;
 
 	this.pointNull = new paper.Point(this.offset_x*4, this.offset_y );
@@ -42,15 +42,15 @@ function ModelRenderer() {
 	var scala_size_x = 20;
 	var scala_size_y = 160;
 
-	this.factorForce = 0.04;
-	this.factorDisplacement = 1100;
+	this.factorForce = 0.05;
+	this.factorDisplacement = 1500;
 
 	this.beta = 0.0;
 	this.gamma = 0.0;
 
 	this.rotate = false;
 
-	this.display_scale = true;
+	this.display_scale = false;
 
 	this.orientation = 'normal portrait';
 

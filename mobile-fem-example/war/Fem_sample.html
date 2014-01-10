@@ -227,8 +227,6 @@ h1 {
 					'Scaling Factor Forces');
 			folder1.add(modelRenderer, 'display_scale').name('show scale')
 					.name('Show Legend');
-			folder1.add(modelRenderer, 'rotate').name('rotate').name(
-					'Rotate by 90°');
 			folder1.open();
 
 			var folder2 = gui.addFolder('Device Orientation');
@@ -244,6 +242,7 @@ h1 {
 							'portrait, upside down' ]).name(
 					'Browser Orientation');
 			folder2.open();
+			gui.close();
 
 			var canvas = document.getElementById('myDatGui');
 			gui.domElement.style.position = 'absolute';
